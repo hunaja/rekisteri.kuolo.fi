@@ -66,7 +66,7 @@ function EntryList() {
     queryKey: ["entries", debouncedSettings.courses, debouncedSettings.name],
     queryFn: ({ pageParam }) =>
       fetch(
-        `/api/entries?` +
+        `/api/users?` +
           new URLSearchParams({
             courses: debouncedSettings.courses,
             name: debouncedSettings.name,
@@ -137,7 +137,7 @@ function EntryList() {
                           <div className="flex pt-3 flex-row place-items-center content-center">
                             <AcademicCapIcon width={10} />
                             <span className="pl-2">
-                              {e.course.substr(2)}. vuosikurssi
+                              {e.course.substring(2)}. vuosikurssi
                             </span>
                           </div>
 
