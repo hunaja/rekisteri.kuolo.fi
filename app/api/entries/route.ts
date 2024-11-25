@@ -30,6 +30,7 @@ export const GET = auth(async function GET(req) {
 
   const entries = await Entry.find(
     {
+      visible: true,
       course: {
         $in: courses,
       },

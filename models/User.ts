@@ -6,7 +6,6 @@ export interface UserInterface {
   phoneNumber: string;
   email: string;
   visible: boolean;
-  phoneNumberVisible: boolean;
 }
 
 const userSchema = new mongoose.Schema<UserInterface>(
@@ -16,7 +15,6 @@ const userSchema = new mongoose.Schema<UserInterface>(
     phoneNumber: String,
     email: String,
     visible: Boolean,
-    phoneNumberVisible: Boolean,
   },
   {
     toJSON: {

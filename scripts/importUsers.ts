@@ -8,82 +8,83 @@ dotenv.config({
   path: __dirname + "/./../.env.local",
 });
 
+const parseFile = async (path: string) => {
+  return new Promise<string[][]>((resolve, reject) => {
+    readFile(path)
+      .then((data) => {
+        parse(
+          data,
+          {
+            delimiter: ";",
+            encoding: "utf8",
+          },
+          (err: unknown, records: string[][]) => {
+            if (err) reject(err);
+            else resolve(records);
+          }
+        );
+      })
+      .catch(reject);
+  });
+};
+
 const importEntries = async () => {
   await connectMongo();
   await User.deleteMany({});
 
-  parse(
-    await readFile(__dirname + "/rekisteri.csv"),
-    {
-      delimiter: ";",
-      encoding: "utf8",
-    },
-    async (err: unknown, records: string[][]) => {
-      if (err) return console.log(err);
+  const records = await parseFile(__dirname + "/./../registry.csv");
 
-      for (const userRecord of records) {
-        const [
-          ,
-          ,
-          ,
-          ,
-          ,
-          ,
-          // First name
-          // Last name
-          // Email
-          // Direct Marketing Allowed
-          // Status
-          // Valid from
-          validUntil, // Valid until // Duration in days // Membership Was Created // Last Modified // Etunimi / Etunimet
-          ,
-          ,
-          ,
-          ,
-          sukunimi, // Sukunimi
-          kutsumanimi, // Kutsumanimi
-          uefSahkis, // Sähköpostiosoite @student.uef.fi // Katuosoite // Postinumero // Postitoimipaikka // Syntymäaika
-          ,
-          ,
-          ,
-          ,
-          puhelinnumero, // Puhelinnumero // Opintojen aloitusvuosi
-          ,
-          kurssiasema, // Kurssiasema // Vastuutehtävä // 5. Vakuutan opiskelevani Itä-Suomen yliopiston lääketieteen koulutusohjelmassa ja haluan liittyä KuoLO ry:n eli Kuopion lääketieteen opiskelijat ry:n jäseneksi. // 6. Hyväksyn tietojen tallentamisen, käsittelyn ja siirtämisen KuoLO ry:n jäsenrekisteriin sekä hyväksyn jäsenrekisterin tietosuojailmoituksen (löytyy alta)
-          ,
-          ,
-          ,
-          luovutettavatTiedot, // Sallin seuraavien tietojen luovuttamisenn...
-        ] = userRecord;
-        if (new Date(validUntil) < new Date()) continue;
+  for (const userRecord of records) {
+    const [
+      ,
+      ,
+      ,
+      ,
+      ,
+      ,
+      validUntil,
+      ,
+      ,
+      ,
+      ,
+      lastName,
+      callName,
+      email,
+      ,
+      ,
+      ,
+      ,
+      phoneNumber,
+      ,
+      course,
+      ,
+      ,
+      ,
+      disclosedInfo,
+    ] = userRecord;
+    if (new Date(validUntil) < new Date()) continue;
 
-        const osoiteluettelo = luovutettavatTiedot.includes("Nimi");
-        const luovutaPuhnro = luovutettavatTiedot.includes("puhelinnumero");
+    const visible = disclosedInfo.includes("Nimi");
+    const phoneNumberVisible = disclosedInfo.includes("puhelinnumero");
+    const name = `${callName} ${lastName}`;
 
-        // Tämä ei halua tietojaan osoiteluetteloon
-        if (!osoiteluettelo) continue;
+    const user = new User({
+      name,
+      course,
+      email,
+      visible,
+    });
+    if (phoneNumberVisible) user.phoneNumber = `+${phoneNumber}`;
 
-        const name = kutsumanimi + " " + sukunimi;
-
-        const user = new User({
-          name,
-          course: kurssiasema,
-          email: uefSahkis,
-        });
-        if (luovutaPuhnro) user.phoneNumber = "+" + puhelinnumero;
-
-        if (!(await User.exists({ email: uefSahkis }))) {
-          await user.save();
-        } else {
-          console.log(`Ignoring duplicate user ${name} (${uefSahkis})`);
-        }
-      }
-
-      console.log("Done");
+    const userExists = await User.exists({ email });
+    if (!userExists) {
+      await user.save();
+    } else {
+      console.log(`Ignoring duplicate user ${name} (${email})`);
     }
-  );
+  }
+
+  console.log("Done");
 };
 
 importEntries();
-
-export {};
