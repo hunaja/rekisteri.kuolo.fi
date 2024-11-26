@@ -4,7 +4,9 @@ Tämä repositorio sisältää KuoLO Ry:n jäsenrekisterisivujen lähdekoodin.
 
 ### Asennus
 
-Kopioi tiedoston `.env.example` sisältö tietokoneellesi ja muokkaa tarvittavat tiedot oikeiksi.
+Uudelleennimeä tiedosto `.env.example` -> `.env.local` .
+
+- Suorita `npx exec auth secret` luodaksesi autentikaatiosalaisuus.
 
 - Auth0:n muuttujia vastaavat tiedot löytyvät helposti heidän sivuiltaan (sovelluksen luotuasi).
 
@@ -12,7 +14,7 @@ Kopioi tiedoston `.env.example` sisältö tietokoneellesi ja muokkaa tarvittavat
 
 - Muuttujan `NEXTAUTH_URL` on osoitettava koko verkkosivustojesi osoitteeseen plus `/api/auth`.
 
-Kun olet säätänyt tarvittavat muuttujat oikeiksi, uudelleennimeä tiedoston nimeksi `.env.local` ja suorita seuraava komento samassa terminaali-ikkunassa:
+Seuraavaksi suorita tämä komento:
 
 ```bash
 

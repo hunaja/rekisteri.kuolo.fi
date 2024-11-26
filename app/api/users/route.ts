@@ -1,7 +1,7 @@
 import connectMongo from "@/connectMongo";
 import { auth } from "../../auth";
 import { NextResponse } from "next/server";
-import Entry, { UserInterface } from "@/models/User";
+import User, { UserInterface } from "@/models/User";
 import { FilterQuery } from "mongoose";
 
 const limit = 10;
@@ -28,7 +28,7 @@ export const GET = auth(async function GET(req) {
     };
   }
 
-  const entries = await Entry.find(
+  const users = await User.find(
     {
       visible: true,
       course: {
@@ -44,17 +44,17 @@ export const GET = auth(async function GET(req) {
       limit: limit + 1,
     }
   );
-  if (!entries)
+  if (!users)
     return NextResponse.json({ message: "Server Error" }, { status: 500 });
 
-  const entriesJson = entries.map((e) => {
+  const entriesJson = users.map((e) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { _id, __v, ...json } = e.toJSON();
     return { ...json, id: _id };
   });
 
   const nextCursor =
-    entries.length === limit + 1 ? entries[entries.length - 2].name : null;
+    users.length === limit + 1 ? users[users.length - 2].name : null;
   if (nextCursor) {
     entriesJson.pop();
   }

@@ -3,14 +3,14 @@ import { signIn } from "./auth";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Button } from "@nextui-org/button";
 
-export default async function SignIn() {
+export default async function AuthorizeWindow() {
   const handleSignIn = async () => {
     "use server";
     await signIn("auth0");
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center flex-1 place-content-center">
       <Card className="m-10 sm:m-20 p-10 self-center w-full sm:w-96">
         <form action={handleSignIn} className="flex flex-col items-center">
           <CardHeader className="justify-center">
@@ -27,6 +27,14 @@ export default async function SignIn() {
           <CardBody>
             <Button type="submit" color="primary">
               Kirjaudu sisään
+            </Button>
+            <Button
+              type="submit"
+              color="primary"
+              variant="bordered"
+              className="mt-5"
+            >
+              Luo tili
             </Button>
           </CardBody>
         </form>

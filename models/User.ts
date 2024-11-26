@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 export interface UserInterface {
   name: string;
   course: string;
-  phoneNumber: string;
+  phoneNumber: string | null;
   email: string;
   visible: boolean;
 }

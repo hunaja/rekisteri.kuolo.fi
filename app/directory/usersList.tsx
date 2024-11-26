@@ -2,8 +2,7 @@
 
 import type { UserInterface } from "@/models/User";
 import { Button } from "@nextui-org/button";
-import { Card, CardBody } from "@nextui-org/card";
-import { Avatar, type Selection } from "@nextui-org/react";
+import { type Selection } from "@nextui-org/react";
 import {
   Dropdown,
   DropdownItem,
@@ -21,21 +20,17 @@ import {
 import React, { useState } from "react";
 import { useDebounce } from "use-debounce";
 import { FunnelIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
-import {
-  AcademicCapIcon,
-  EnvelopeIcon,
-  PhoneIcon,
-} from "@heroicons/react/16/solid";
+import { ArrowDownIcon } from "@heroicons/react/16/solid";
+import UserBox from "./box";
 
 const queryClient = new QueryClient();
 
-type ApiEntries = {
-  entries: UserInterface[];
+type ApiUsers = {
+  data: UserInterface[];
   next: string | null;
 };
 
-function EntryList() {
+function UsersList() {
   const [name, setName] = useState("");
   const [courses, setCourses] = useState<Selection>(
     new Set(["LT1", "LT2", "LT3", "LT4", "LT5", "LT6", "LTn"])
@@ -57,13 +52,13 @@ function EntryList() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery<
-    ApiEntries,
+    ApiUsers,
     unknown,
     InfiniteData<{ data: UserInterface[] }>,
     readonly unknown[],
     string
   >({
-    queryKey: ["entries", debouncedSettings.courses, debouncedSettings.name],
+    queryKey: ["users", debouncedSettings.courses, debouncedSettings.name],
     queryFn: ({ pageParam }) =>
       fetch(
         `/api/users?` +
@@ -88,7 +83,7 @@ function EntryList() {
           onChange={(e) => setName(e.target.value)}
           label="Hae..."
         />
-        <div className="pl-5 flex">
+        <div className="pl-5 flex-1">
           <Dropdown>
             <DropdownTrigger>
               <Button
@@ -96,8 +91,7 @@ function EntryList() {
                 color="primary"
                 startContent={<FunnelIcon width={15} />}
               >
-                <p className="hidden sm:block">Vuosikurssit</p>
-                <p className="block sm:hidden font-bold">VSK</p>
+                Vsk
               </Button>
             </DropdownTrigger>
             <DropdownMenu
@@ -120,48 +114,14 @@ function EntryList() {
           </Dropdown>
         </div>
       </fieldset>
-      {!error && !isPending && (
+
+      {!error && !isPending && data?.pages[0]?.data.length !== 0 && (
         <ul className="p-4 sm:p-10">
           {data?.pages.map((p, i) => (
             <React.Fragment key={i}>
-              {p.data?.map((e) => (
-                <li key={e.email}>
-                  <Card className="mb-5 w-full sm:w-96 flex flex-row items-center">
-                    <div className="p-5">
-                      <Avatar size="lg" />
-                    </div>
-                    <div>
-                      <CardBody className="">
-                        <h3 className="text-2xl pt-2">{e.name}</h3>
-                        <div>
-                          <div className="flex pt-3 flex-row place-items-center content-center">
-                            <AcademicCapIcon width={10} />
-                            <span className="pl-2">
-                              {e.course.substring(2)}. vuosikurssi
-                            </span>
-                          </div>
-
-                          <div className="flex flex-row py-3 place-items-center content-center">
-                            <EnvelopeIcon width={10} />
-                            <span className="pl-2">
-                              <Link href={`mailto:${e.email}`}>{e.email}</Link>
-                            </span>
-                          </div>
-
-                          {e.phoneNumber && (
-                            <div className="flex flex-row pb-3 place-items-center content-center">
-                              <PhoneIcon width={10} />
-                              <span className="pl-2">
-                                <Link href={`tel:${e.phoneNumber}`}>
-                                  {e.phoneNumber}
-                                </Link>
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </CardBody>
-                    </div>
-                  </Card>
+              {p.data?.map((u) => (
+                <li key={u.email}>
+                  <UserBox user={u} />
                 </li>
               ))}
             </React.Fragment>
@@ -169,16 +129,27 @@ function EntryList() {
         </ul>
       )}
 
-      {isPending && <Spinner className="p-10" />}
+      {!isPending &&
+        !isFetchingNextPage &&
+        data?.pages.length === 1 &&
+        data.pages[0].data.length === 0 && (
+          <div className="flex-1 text-center flex flex-col place-content-center">
+            <h1 className="text-3xl mb-5">Ei tuloksia</h1>
+            <p>Ei hakutuloksia. Muuta hakuehtoja.</p>
+          </div>
+        )}
+
+      {isPending && <Spinner className="p-10 flex-1" />}
 
       {hasNextPage && isFetchingNextPage && <Spinner className="mb-10" />}
-
       {hasNextPage && !isFetchingNextPage && (
         <Button
           color="primary"
           onClick={() => fetchNextPage()}
           disabled={!hasNextPage || isFetchingNextPage}
           className="mb-10 self-center"
+          startContent={<ArrowDownIcon width={15} />}
+          size="lg"
         >
           Lataa lisää
         </Button>
@@ -187,10 +158,10 @@ function EntryList() {
   );
 }
 
-export default function EntryListWrapper() {
+export default function UsersListWrapper() {
   return (
     <QueryClientProvider client={queryClient}>
-      <EntryList />
+      <UsersList />
     </QueryClientProvider>
   );
 }

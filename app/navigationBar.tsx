@@ -7,23 +7,18 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from "@nextui-org/navbar";
-import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
-import { signOut } from "./auth";
 
 import Image from "next/image";
-import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
+import { Avatar } from "@nextui-org/avatar";
 
 export default function NavigationBar({
   selected,
+  userName,
 }: {
-  selected: "wiki" | "exams" | "videos" | "directory";
+  selected: "user" | "exams" | "videos" | "directory";
+  userName: string;
 }) {
-  const handleSignOut = async () => {
-    "use server";
-    await signOut();
-  };
-
   return (
     <Navbar shouldHideOnScroll className="mb-5">
       <NavbarContent>
@@ -40,9 +35,9 @@ export default function NavigationBar({
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem isActive={selected === "wiki"}>
-          <Link color={selected === "wiki" ? "primary" : "foreground"} href="/">
-            Etusivu
+        <NavbarItem isActive={selected === "user"}>
+          <Link color={selected === "user" ? "primary" : "foreground"} href="/">
+            Käyttäjä
           </Link>
         </NavbarItem>
         <NavbarItem isActive={selected === "directory"}>
@@ -56,14 +51,14 @@ export default function NavigationBar({
       </NavbarContent>
 
       <NavbarMenu>
-        <NavbarMenuItem isActive={selected === "wiki"} className="p-2">
+        <NavbarMenuItem isActive={selected === "user"} className="p-2">
           <Link
-            color={selected === "wiki" ? "primary" : "foreground"}
+            color={selected === "user" ? "primary" : "foreground"}
             href="/"
             size="lg"
             className="w-full"
           >
-            Etusivu
+            Käyttäjä
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem isActive={selected === "directory"} className="p-2">
@@ -80,27 +75,16 @@ export default function NavigationBar({
 
       <NavbarContent className="gap-4" justify="end">
         <NavbarItem>
-          <form action={handleSignOut}>
-            <Button
-              type="submit"
-              color="danger"
-              variant="bordered"
-              className="hidden sm:flex"
-              startContent={<ArrowRightStartOnRectangleIcon width={15} />}
-            >
-              Kirjaudu ulos
-            </Button>
-            <Button
-              type="submit"
-              color="danger"
-              variant="bordered"
-              className="flex sm:hidden"
-              isIconOnly
-            >
-              <ArrowRightStartOnRectangleIcon width={15} />
-            </Button>
-          </form>
+          <Avatar
+            size="sm"
+            name={userName
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .toUpperCase()}
+          />
         </NavbarItem>
+        <NavbarItem className="hidden sm:block text-sm">{userName}</NavbarItem>
       </NavbarContent>
     </Navbar>
   );

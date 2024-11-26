@@ -1,20 +1,27 @@
+import User from "@/models/User";
 import { auth } from "../auth";
 import NavigationBar from "../navigationBar";
-import SignIn from "../signin";
-import EntryListWrapper from "./entryList";
+import AuthorizeWindow from "../authorize";
+import UsersListWrapper from "./usersList";
+import connectMongo from "@/connectMongo";
 
 export default async function Directory() {
   const session = await auth();
   if (!session?.user) {
-    return <SignIn />;
+    return <AuthorizeWindow />;
   }
+
+  await connectMongo();
+
+  const user = await User.findOne({ email: session.user.email });
 
   return (
     <>
-      <NavigationBar selected="directory" />
-      <div className="flex flex-col h-full">
-        <EntryListWrapper />
-      </div>
+      <NavigationBar
+        selected="directory"
+        userName={user?.name ?? session.user.name}
+      />
+      <UsersListWrapper />
     </>
   );
 }

@@ -4,5 +4,9 @@ import React from "react";
 import { NextUIProvider } from "@nextui-org/react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <NextUIProvider>{children}</NextUIProvider>;
+  return (
+    <NextUIProvider className="min-h-full flex flex-col">
+      {children}
+    </NextUIProvider>
+  );
 }
