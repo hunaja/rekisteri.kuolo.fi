@@ -17,7 +17,7 @@ export default async function Home() {
     return <AuthorizeWindow />;
   }
 
-  let user = await User.findOne({ email: session.user.email });
+  const user = await User.findOne({ email: session.user.email });
 
   return (
     <>

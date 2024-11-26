@@ -6,10 +6,9 @@ import User from "@/models/User";
 export const GET = auth(async function GET(req) {
   await connectMongo();
 
-  const queryParams = req.nextUrl.searchParams;
   // const apiToken = queryParams.get("apiToken");
   const authEmail = req.auth?.user?.email;
-  // @ts-expect-error
+  // @ts-expect-error [email] parameteri
   const requestedEmail = req.query.email;
 
   if (authEmail !== requestedEmail)
