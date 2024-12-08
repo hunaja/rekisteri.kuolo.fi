@@ -11,7 +11,7 @@ import React from "react";
 
 export default function UserBox({ user }: { user: UserInterface }) {
   return (
-    <Card className="mb-5 w-full sm:w-96 flex flex-row items-center">
+    <Card className="mb-5 w-full sm:w-96 flex flex-row items-center h-[175px]">
       <div className="p-5">
         <Avatar
           size="lg"

@@ -34,7 +34,7 @@ export default function VisibilitySwitch({
       isSelected={state}
       onValueChange={handleVisibilityChange}
     >
-      Näytä profiili jäsenluettelossa
+      Näy jäsenluettelossa
     </Switch>
   );
 }

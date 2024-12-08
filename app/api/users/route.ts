@@ -1,66 +1,26 @@
-import connectMongo from "@/connectMongo";
-import { auth } from "../../auth";
-import { NextResponse } from "next/server";
-import User, { UserInterface } from "@/models/User";
-import { FilterQuery } from "mongoose";
+import { NextRequest, NextResponse } from "next/server";
+import usersService from "@/services/users";
+import { isStudentCourse } from "@/models/User";
+import fetchSession from "@/app/fetchSession";
 
-const limit = 10;
+export async function GET(req: NextRequest) {
+  const session = await fetchSession();
 
-export const GET = auth(async function GET(req) {
-  await connectMongo();
-
-  if (!req.auth)
-    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+  if (session.type === "inauthenticated")
+    return NextResponse.json({ error: "Inauthenticated" }, { status: 401 });
+  else if (session.type === "inauthorized")
+    return NextResponse.json({ error: "Inauthorized" }, { status: 403 });
 
   const courses = (req.nextUrl?.searchParams.get("courses") ?? "").split(",");
-  const nameSearch = req.nextUrl?.searchParams.get("name") ?? "";
+  const name = req.nextUrl?.searchParams.get("name") ?? "";
   const next = req?.nextUrl?.searchParams.get("next");
 
-  const additionalOpts = {} as FilterQuery<UserInterface>;
-  if (nameSearch) {
-    additionalOpts.$text = {
-      $search: nameSearch,
-    };
-  }
-  if (next) {
-    additionalOpts.name = {
-      $gt: next,
-    };
-  }
-
-  const users = await User.find(
+  const users = await usersService.getVisibleStudents(
     {
-      visible: true,
-      course: {
-        $in: courses,
-      },
-      ...additionalOpts,
+      name,
+      courses: courses.filter((c) => isStudentCourse(c)),
     },
-    null,
-    {
-      sort: {
-        name: 1,
-      },
-      limit: limit + 1,
-    }
+    next
   );
-  if (!users)
-    return NextResponse.json({ message: "Server Error" }, { status: 500 });
-
-  const entriesJson = users.map((e) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _id, __v, ...json } = e.toJSON();
-    return { ...json, id: _id };
-  });
-
-  const nextCursor =
-    users.length === limit + 1 ? users[users.length - 2].name : null;
-  if (nextCursor) {
-    entriesJson.pop();
-  }
-
-  return NextResponse.json({
-    data: entriesJson,
-    next: nextCursor,
-  });
-});
+  return NextResponse.json(users);
+}

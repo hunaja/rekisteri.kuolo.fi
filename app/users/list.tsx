@@ -23,18 +23,19 @@ import { FunnelIcon } from "@heroicons/react/24/outline";
 import { ArrowDownIcon } from "@heroicons/react/16/solid";
 import UserBox from "./box";
 
-const queryClient = new QueryClient();
-
 type ApiUsers = {
   data: UserInterface[];
   next: string | null;
 };
 
-function UsersList() {
+const coursesArray = ["LT1", "LT2", "LT3", "LT4", "LT5", "LT6", "LTn"];
+
+const queryClient = new QueryClient();
+
+function UsersList({ initialData }: { initialData: ApiUsers }) {
+  // const parentRef = React.useRef<HTMLDivElement>(null);
   const [name, setName] = useState("");
-  const [courses, setCourses] = useState<Selection>(
-    new Set(["LT1", "LT2", "LT3", "LT4", "LT5", "LT6", "LTn"])
-  );
+  const [courses, setCourses] = useState<Selection>(new Set(coursesArray));
 
   const [debouncedSettings] = useDebounce<{ name: string; courses: string }>(
     {
@@ -70,28 +71,33 @@ function UsersList() {
       ).then((r) => r.json()),
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.next,
+    staleTime: 1000 * 60,
+    initialData:
+      debouncedSettings.name === "" &&
+      debouncedSettings.courses == coursesArray.join(",") &&
+      initialData
+        ? {
+            pages: [initialData],
+            pageParams: [""],
+          }
+        : undefined,
   });
 
   return (
     <>
-      <fieldset
-        className="flex justify-between items-center px-2 sm:px-4 flex-grow-0"
-        disabled={isPending}
-      >
+      <div className="flex justify-between items-center px-2 sm:px-4 flex-grow-0">
         <Input
           value={name}
+          size="sm"
           onChange={(e) => setName(e.target.value)}
+          isDisabled={isPending}
           label="Hae..."
         />
         <div className="pl-5 flex-1">
           <Dropdown>
             <DropdownTrigger>
-              <Button
-                size="lg"
-                color="primary"
-                startContent={<FunnelIcon width={15} />}
-              >
-                Vsk
+              <Button size="lg" color="primary" isIconOnly>
+                <FunnelIcon width={15} />
               </Button>
             </DropdownTrigger>
             <DropdownMenu
@@ -102,18 +108,19 @@ function UsersList() {
               selectionMode="multiple"
               selectedKeys={courses}
               onSelectionChange={setCourses}
+              disabledKeys={isPending ? new Set(coursesArray) : undefined}
             >
-              <DropdownItem key="LT1">LT1</DropdownItem>
-              <DropdownItem key="LT2">LT2</DropdownItem>
-              <DropdownItem key="LT3">LT3</DropdownItem>
-              <DropdownItem key="LT4">LT4</DropdownItem>
-              <DropdownItem key="LT5">LT5</DropdownItem>
-              <DropdownItem key="LT6">LT6</DropdownItem>
-              <DropdownItem key="LTn">LTn</DropdownItem>
+              <DropdownItem key="LT1">1. vsk</DropdownItem>
+              <DropdownItem key="LT2">2. vsk</DropdownItem>
+              <DropdownItem key="LT3">3. vsk</DropdownItem>
+              <DropdownItem key="LT4">4. vsk</DropdownItem>
+              <DropdownItem key="LT5">5. vsk</DropdownItem>
+              <DropdownItem key="LT6">6. vsk</DropdownItem>
+              <DropdownItem key="LTn">n. vsk</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
-      </fieldset>
+      </div>
 
       {!error && !isPending && data?.pages[0]?.data.length !== 0 && (
         <ul className="p-4 sm:p-10">
@@ -142,6 +149,7 @@ function UsersList() {
       {isPending && <Spinner className="p-10 flex-1" />}
 
       {hasNextPage && isFetchingNextPage && <Spinner className="mb-10" />}
+
       {hasNextPage && !isFetchingNextPage && (
         <Button
           color="primary"
@@ -158,10 +166,14 @@ function UsersList() {
   );
 }
 
-export default function UsersListWrapper() {
+export default function UsersListWrapper({
+  initialData,
+}: {
+  initialData: ApiUsers;
+}) {
   return (
     <QueryClientProvider client={queryClient}>
-      <UsersList />
+      <UsersList initialData={initialData} />
     </QueryClientProvider>
   );
 }

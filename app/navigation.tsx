@@ -16,7 +16,7 @@ export default function NavigationBar({
   selected,
   userName,
 }: {
-  selected: "user" | "exams" | "videos" | "directory";
+  selected: "user" | "users" | "videos" | "directory";
   userName: string;
 }) {
   return (
@@ -37,13 +37,13 @@ export default function NavigationBar({
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem isActive={selected === "user"}>
           <Link color={selected === "user" ? "primary" : "foreground"} href="/">
-            Käyttäjä
+            Profiili
           </Link>
         </NavbarItem>
-        <NavbarItem isActive={selected === "directory"}>
+        <NavbarItem isActive={selected === "users"}>
           <Link
-            color={selected === "directory" ? "primary" : "foreground"}
-            href="/directory"
+            color={selected === "users" ? "primary" : "foreground"}
+            href="/users"
           >
             Jäsenet
           </Link>
@@ -58,13 +58,13 @@ export default function NavigationBar({
             size="lg"
             className="w-full"
           >
-            Käyttäjä
+            Profiili
           </Link>
         </NavbarMenuItem>
-        <NavbarMenuItem isActive={selected === "directory"} className="p-2">
+        <NavbarMenuItem isActive={selected === "users"} className="p-2">
           <Link
-            color={selected === "directory" ? "primary" : "foreground"}
-            href="/directory"
+            color={selected === "users" ? "primary" : "foreground"}
+            href="/users"
             size="lg"
             className="w-full"
           >
