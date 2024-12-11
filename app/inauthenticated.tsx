@@ -1,12 +1,13 @@
 import Image from "next/image";
-import { Card, CardBody, CardHeader } from "@nextui-org/card";
+import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Button } from "@nextui-org/button";
-import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import { SignInButton } from "@clerk/nextjs";
+import { Link } from "@nextui-org/react";
 
 export default async function InauthenticatedPage() {
   return (
     <div className="flex justify-center flex-1 place-content-center">
-      <Card className="m-10 sm:m-0 p-10 self-center w-full sm:w-96">
+      <Card className="m-10 sm:m-0 px-10 py-5 self-center w-full sm:w-96">
         <CardHeader className="justify-center">
           <Image
             src="/logo.png"
@@ -18,32 +19,23 @@ export default async function InauthenticatedPage() {
           <h1 className="text-xl sm:text-2xl my-5">Jäsensivut</h1>
         </CardHeader>
 
-        <CardBody className="mt-5">
-          <p className="mb-5 text-sm">
-            <b className="font-bold">Jäsenet:</b> Sinun on luotava tili samalla
-            @student.uef.fi-sähköpostiosoitteella, jolla olet rekisteröitynyt
-            KuoLO Ry:n jäseneksi. Tämän jälkeen voit kirjautua sisään.
+        <CardBody className="pt-5">
+          <p className="mb-5">
+            Sinulle on lähetetty kutsu tilin luomiseen jäsensivuille, mikäli
+            olet <b className="font-bold">KuoLO Ry:n jäsen tai alumni</b>.
           </p>
-
-          <p className="mb-5 text-sm">
-            <b className="font-bold">Yhteistyökumppanit:</b> Sinun on
-            kirjauduttava sisään organisaatiolle annetuilla tunnuksilla.
-          </p>
-
           <SignInButton>
-            <Button color="primary">Kirjaudu sisään</Button>
-          </SignInButton>
-          <SignUpButton>
-            <Button
-              type="submit"
-              color="primary"
-              variant="bordered"
-              className="mt-5"
-            >
-              Luo tili
+            <Button color="primary" className="w-full">
+              Kirjaudu sisään
             </Button>
-          </SignUpButton>
+          </SignInButton>
         </CardBody>
+        <CardFooter className="flex flex-col place-items-start">
+          <p className="">
+            Jos et ole saanut kutsua, voit uudelleenlähettää sen{" "}
+            <Link href="/get-invited">täältä</Link>.
+          </p>
+        </CardFooter>
       </Card>
     </div>
   );

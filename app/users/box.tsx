@@ -28,7 +28,9 @@ export default function UserBox({ user }: { user: UserInterface }) {
             <div className="flex pt-3 flex-row place-items-center content-center">
               <AcademicCapIcon width={10} />
               <span className="pl-2">
-                {user.course.substring(2)}. vuosikurssi
+                {user.course !== "alumni"
+                  ? `${user.course.substring(2)}. vuosikurssi`
+                  : "Alumni"}
               </span>
             </div>
 

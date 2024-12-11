@@ -17,7 +17,7 @@ import {
   QueryClientProvider,
   useInfiniteQuery,
 } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import { ArrowDownIcon } from "@heroicons/react/16/solid";
@@ -33,7 +33,6 @@ const coursesArray = ["LT1", "LT2", "LT3", "LT4", "LT5", "LT6", "LTn"];
 const queryClient = new QueryClient();
 
 function UsersList({ initialData }: { initialData: ApiUsers }) {
-  // const parentRef = React.useRef<HTMLDivElement>(null);
   const [name, setName] = useState("");
   const [courses, setCourses] = useState<Selection>(new Set(coursesArray));
 
