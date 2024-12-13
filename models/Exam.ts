@@ -1,7 +1,7 @@
-import mongoose, { PopulatedDoc, Schema, model } from "mongoose";
+import mongoose, { PopulatedDoc, Schema } from "mongoose";
 
 import "./Course";
-import { CourseInterface } from "./Course";
+import { ApiCourse, CourseInterface } from "./Course";
 
 export interface ExamInterface {
   course: PopulatedDoc<CourseInterface>;
@@ -12,6 +12,17 @@ export interface ExamInterface {
   fileSize: number;
   fileName: string;
 }
+
+export type ApiExam = Omit<ExamInterface, "course"> & {
+  course: string;
+  id: string;
+};
+
+export type ApiExamPopulated = Omit<ApiExam, "course"> & {
+  course: ApiCourse;
+};
+
+export type ExamDocument = mongoose.Document & ExamInterface;
 
 const examSchema = new Schema<ExamInterface>(
   {
@@ -47,6 +58,7 @@ const examSchema = new Schema<ExamInterface>(
   {
     toJSON: {
       transform: function (doc, ret) {
+        ret.id = ret._id.toString();
         delete ret._id;
         delete ret.__v;
       },

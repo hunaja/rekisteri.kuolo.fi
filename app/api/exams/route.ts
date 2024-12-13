@@ -1,6 +1,7 @@
 import * as yup from "yup";
 import { NextRequest, NextResponse } from "next/server";
 import examsService from "@/services/exams";
+import fetchSession from "@/app/fetchSession";
 
 const examForm = yup.object({
   courseId: yup.string().required(),
@@ -14,7 +15,31 @@ const examForm = yup.object({
     .required(),
 });
 
+export async function GET(req: NextRequest) {
+  const session = await fetchSession();
+
+  if (session.type === "inauthenticated")
+    return NextResponse.json({ error: "Inauthenticated" }, { status: 401 });
+  if (session.type === "inauthorized")
+    return NextResponse.json({ error: "Inauthorized" }, { status: 403 });
+
+  const queryParams = req.nextUrl.searchParams;
+  const invisible = queryParams.get("invisible");
+  if (invisible !== "true")
+    return NextResponse.json({ error: "Invalid query" }, { status: 400 });
+
+  const exams = await examsService.getAllInvisible();
+  return NextResponse.json(exams);
+}
+
 export async function POST(req: NextRequest) {
+  const session = await fetchSession();
+
+  if (session.type === "inauthenticated")
+    return NextResponse.json({ error: "Inauthenticated" }, { status: 401 });
+  if (session.type === "inauthorized")
+    return NextResponse.json({ error: "Inauthorized" }, { status: 403 });
+
   try {
     const body = await req.json();
     const validatedForm = await examForm.validate(body);
@@ -23,7 +48,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(createdExam);
   } catch (e) {
     if (e instanceof yup.ValidationError) {
-      console.log(e);
+      console.error(e);
       return NextResponse.json(
         {
           error: e.errors[0],
@@ -32,8 +57,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    console.log(e);
 
     return NextResponse.json({ error: "Unknown error" }, { status: 500 });
   }

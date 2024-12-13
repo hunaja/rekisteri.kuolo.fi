@@ -14,7 +14,6 @@ export async function GET(
     return NextResponse.json({ error: "Inauthorized" }, { status: 403 });
 
   const { id } = params;
-
   const downloadUrl = await examsService.getExamDownloadUrl(id);
 
   return NextResponse.json({ url: downloadUrl });

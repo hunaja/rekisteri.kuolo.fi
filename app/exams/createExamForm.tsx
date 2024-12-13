@@ -1,4 +1,4 @@
-import { CourseInterface, CourseYear } from "@/models/Course";
+import { ApiCoursePopulated, CourseYear } from "@/models/Course";
 import {
   Button,
   Input,
@@ -15,7 +15,7 @@ export default function CreateExamForm({
   close,
   courseYear,
 }: {
-  courses: CourseInterface[];
+  courses: ApiCoursePopulated[];
   courseYear: CourseYear;
   close: () => void;
 }) {
@@ -57,8 +57,6 @@ export default function CreateExamForm({
       body: JSON.stringify(examForm),
     });
     const jsonResponse = await response.json();
-
-    console.log(jsonResponse);
 
     const fileResponse = await fetch(jsonResponse.uploadUrl, {
       method: "PUT",
@@ -113,8 +111,16 @@ export default function CreateExamForm({
           onValueChange={setYear}
         />
 
-        <Button as="label" htmlFor="file" variant="bordered" className="mt-2">
-          Valitse tenttimateriaali ({file?.name ?? "ei valittu"})
+        <Button
+          as="label"
+          htmlFor="file"
+          variant="bordered"
+          className="mt-2 text-sm"
+        >
+          <div className="w-full flex flex-row justify-between">
+            <div className="mr-2 text-gray-500">Valitse tenttimateriaali</div>
+            <div>{file?.name ?? "Ei valittu"}</div>
+          </div>
         </Button>
         <input
           type="file"

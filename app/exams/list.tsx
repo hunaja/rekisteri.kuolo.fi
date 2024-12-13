@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  AcademicCapIcon,
-  DocumentTextIcon,
-  PlusCircleIcon,
-} from "@heroicons/react/16/solid";
+import { AcademicCapIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
 import { Button } from "@nextui-org/button";
 import {
   Dropdown,
@@ -14,10 +10,7 @@ import {
 } from "@nextui-org/dropdown";
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { useState } from "react";
-import { Card, CardBody } from "@nextui-org/card";
 import {
-  Chip,
-  Link,
   Modal,
   ModalContent,
   Selection,
@@ -32,11 +25,11 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-import { CourseInterface, CourseYear } from "@/models/Course";
+import { ApiCoursePopulated, CourseYear } from "@/models/Course";
 import CreateCourseForm from "./createCourseForm";
 import { courseYears } from "../constants";
 import CreateExamForm from "./createExamForm";
-import { ExamInterface } from "@/models/Exam";
+import ExamBox from "./box";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +40,7 @@ export function ExamsList({
   initialCourses,
 }: {
   initialCourseYear: CourseYear;
-  initialCourses: CourseInterface[];
+  initialCourses: ApiCoursePopulated[];
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedKeys, setSelectedKeys] = useState<Selection>(
@@ -60,23 +53,13 @@ export function ExamsList({
     [selectedKeys]
   );
 
-  const { data: courses, isPending } = useQuery<CourseInterface[]>({
+  const { data: courses, isPending } = useQuery<ApiCoursePopulated[]>({
     queryKey: ["courses", selectedYear],
     queryFn: () =>
       fetch(`/api/courses?year=${selectedYear}`).then((res) => res.json()),
     initialData:
       (selectedYear === initialCourseYear && initialCourses) || undefined,
   });
-
-  const handleExamClick = (exam: ExamInterface) => async () => {
-    const response = await fetch(`/api/exams/${exam.id}/download`);
-    if (response.ok) {
-      const jsonResponse = await response.json();
-      window.open(jsonResponse.url, "_blank");
-    }
-  };
-
-  console.log(courses);
 
   return (
     <>
@@ -181,84 +164,11 @@ export function ExamsList({
                       : "1 tentti"
                   }`}
                 >
-                  {(course.exams as ExamInterface[]).map((exam) => (
-                    <Link
-                      key={exam.id}
-                      className="w-full mb-5 hover:cursor-pointer"
-                      onClick={handleExamClick(exam)}
-                    >
-                      <Card className="w-full">
-                        <CardBody className="flex flex-row items-center justify-between">
-                          <div className="flex flex-row items-center">
-                            <DocumentTextIcon width={25} className="" />
-                            {exam.year ? (
-                              <>
-                                <p className="p-2 flex">Vuosi {exam.year}</p>
-                                <Chip className="text-sm">
-                                  {exam.description}
-                                </Chip>
-                              </>
-                            ) : (
-                              <p className="p-2 flex">{exam.description}</p>
-                            )}
-                          </div>
-                          <div className="flex flex-row items-center text-sm">
-                            {exam.fileSize && (
-                              <p className="p-2">
-                                {Math.round(exam.fileSize / 1000 / 1000)} MB,{" "}
-                                {exam.fileMimeType}
-                              </p>
-                            )}
-                          </div>
-                        </CardBody>
-                      </Card>
-                    </Link>
+                  {course.exams.map((exam) => (
+                    <ExamBox key={exam.id} exam={exam} />
                   ))}
                 </AccordionItem>
               ))}
-            {/* <AccordionItem
-            key="REPULSE"
-            title="REPULSE"
-            subtitle={
-              <span>
-                <strong>Elimistön puolustusjärjestelmät</strong>, 3 koetta
-              </span>
-            }
-          >
-            <Link href="/download-exam" className="w-full">
-              <Card className="mb-2 w-full">
-                <CardBody className="flex flex-row items-center justify-between">
-                  <div className="flex flex-row items-center">
-                    <DocumentTextIcon width={25} className="" />
-                    <p className="p-2 flex">Vuosi 2020</p>
-                    <Chip className="text-sm">lopputentti</Chip>
-                  </div>
-                </CardBody>
-              </Card>
-            </Link>
-            <Link href="/download-exam" className="w-full">
-              <Card className="mb-2 w-full">
-                <CardBody className="flex flex-row items-center justify-between">
-                  <div className="flex flex-row items-center">
-                    <DocumentTextIcon width={25} className="" />
-                    <p className="p-2 flex">Vuosi 2020</p>
-                    <Chip className="text-sm">vastaukseton lopputentti</Chip>
-                  </div>
-                </CardBody>
-              </Card>
-            </Link>
-            <Link href="/download-exam" className="w-full">
-              <Card className="mb-2 w-full">
-                <CardBody className="flex flex-row items-center justify-between">
-                  <div className="flex flex-row items-center">
-                    <DocumentTextIcon width={25} className="" />
-                    <p className="p-2 flex">Vuosi 2019</p>
-                    <Chip className="text-sm">lopputentti</Chip>
-                  </div>
-                </CardBody>
-              </Card>
-            </Link> 
-          </AccordionItem>*/}
           </Accordion>
         </div>
       )}
@@ -271,7 +181,7 @@ export default function ExamsListWrapper({
   initialCourses,
 }: {
   initialCourseYear: CourseYear;
-  initialCourses: CourseInterface[];
+  initialCourses: ApiCoursePopulated[];
 }) {
   return (
     <QueryClientProvider client={queryClient}>

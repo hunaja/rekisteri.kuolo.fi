@@ -1,5 +1,5 @@
-import mongoose, { ObjectId, PopulatedDoc } from "mongoose";
-import { ExamInterface } from "./Exam";
+import mongoose, { PopulatedDoc } from "mongoose";
+import { ApiExam, ExamInterface } from "./Exam";
 import { StudentCourse } from "./User";
 
 import "./Exam";
@@ -15,6 +15,15 @@ export interface CourseInterface {
   year: CourseYear;
   exams: PopulatedDoc<ExamInterface>[];
 }
+
+export type ApiCourse = Omit<CourseInterface, "exams"> & {
+  exams: string[];
+  id: string;
+};
+
+export type ApiCoursePopulated = Omit<ApiCourse, "exams"> & {
+  exams: ApiExam[];
+};
 
 const courseSchema = new mongoose.Schema<CourseInterface>(
   {
@@ -49,5 +58,5 @@ const courseSchema = new mongoose.Schema<CourseInterface>(
   }
 );
 
-export default mongoose.models.Course ||
+export default (mongoose.models.Course as mongoose.Model<CourseInterface>) ||
   mongoose.model<CourseInterface>("Course", courseSchema);

@@ -8,12 +8,10 @@ import { courseYears } from "@/app/constants";
 export async function GET(req: NextRequest) {
   const session = await fetchSession();
 
-  if (session.type === "inauthenticated" || session.type === "inauthorized") {
-    return NextResponse.json({
-      status: 401,
-      body: { error: "Unauthorized" },
-    });
-  }
+  if (session.type === "inauthenticated")
+    return NextResponse.json({ error: "Inauthenticated" }, { status: 401 });
+  if (session.type === "inauthorized")
+    return NextResponse.json({ error: "Inauthorized" }, { status: 403 });
 
   const courseYear = req.nextUrl?.searchParams.get("year");
   if (!courseYear) {
