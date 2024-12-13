@@ -1,6 +1,6 @@
 import NavigationBar from "./navigation";
 import VisibilitySwitch from "./visibilitySwitch";
-import UserBox from "./users/box";
+import UserBox from "./students/box";
 import SignOutModal from "./signOutModal";
 import fetchSession from "./fetchSession";
 import InauthenticatedPage from "./inauthenticated";

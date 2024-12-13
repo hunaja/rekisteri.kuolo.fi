@@ -1,0 +1,14 @@
+services:
+  minio:
+    image: minio/minio
+    ports:
+      - 9000:9000
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+    command: server /data
+
+volumes:
+  minio_data: {}

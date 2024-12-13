@@ -1,6 +1,6 @@
 "use client";
 
-import type { UserInterface } from "@/models/User";
+import { StudentCourse, type UserInterface } from "@/models/User";
 import { Button } from "@nextui-org/button";
 import { type Selection } from "@nextui-org/react";
 import {
@@ -17,9 +17,9 @@ import {
   QueryClientProvider,
   useInfiniteQuery,
 } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDebounce } from "use-debounce";
-import { FunnelIcon } from "@heroicons/react/24/outline";
+import { FunnelIcon } from "@heroicons/react/24/solid";
 import { ArrowDownIcon } from "@heroicons/react/16/solid";
 import UserBox from "./box";
 
@@ -28,13 +28,21 @@ type ApiUsers = {
   next: string | null;
 };
 
-const coursesArray = ["LT1", "LT2", "LT3", "LT4", "LT5", "LT6", "LTn"];
+const studentCourses: StudentCourse[] = [
+  "LT1",
+  "LT2",
+  "LT3",
+  "LT4",
+  "LT5",
+  "LT6",
+  "LTn",
+];
 
 const queryClient = new QueryClient();
 
 function UsersList({ initialData }: { initialData: ApiUsers }) {
   const [name, setName] = useState("");
-  const [courses, setCourses] = useState<Selection>(new Set(coursesArray));
+  const [courses, setCourses] = useState<Selection>(new Set(studentCourses));
 
   const [debouncedSettings] = useDebounce<{ name: string; courses: string }>(
     {
@@ -73,7 +81,7 @@ function UsersList({ initialData }: { initialData: ApiUsers }) {
     staleTime: 1000 * 60,
     initialData:
       debouncedSettings.name === "" &&
-      debouncedSettings.courses == coursesArray.join(",") &&
+      debouncedSettings.courses == studentCourses.join(",") &&
       initialData
         ? {
             pages: [initialData],
@@ -100,14 +108,14 @@ function UsersList({ initialData }: { initialData: ApiUsers }) {
               </Button>
             </DropdownTrigger>
             <DropdownMenu
-              aria-label="Multiple selection example"
+              aria-label="Valitse vuosikurssi"
               variant="flat"
               closeOnSelect={false}
               disallowEmptySelection
               selectionMode="multiple"
               selectedKeys={courses}
               onSelectionChange={setCourses}
-              disabledKeys={isPending ? new Set(coursesArray) : undefined}
+              disabledKeys={isPending ? new Set(studentCourses) : undefined}
             >
               <DropdownItem key="LT1">1. vsk</DropdownItem>
               <DropdownItem key="LT2">2. vsk</DropdownItem>

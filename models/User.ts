@@ -12,9 +12,19 @@ export type UserCourse =
 
 export type StudentCourse = Exclude<UserCourse, "alumni">;
 
+const studentCourses: StudentCourse[] = [
+  "LT1",
+  "LT2",
+  "LT3",
+  "LT4",
+  "LT5",
+  "LT6",
+  "LTn",
+];
+
 export const isStudentCourse = (course: unknown): course is StudentCourse =>
   typeof course === "string" &&
-  ["LT1", "LT2", "LT3", "LT4", "LT5", "LT6", "LTn"].includes(course);
+  studentCourses.includes(course as StudentCourse);
 
 export interface UserInterface {
   name: string;

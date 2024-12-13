@@ -16,7 +16,7 @@ export default function NavigationBar({
   selected,
   userName,
 }: {
-  selected: "user" | "users" | "videos" | "directory";
+  selected: "user" | "users" | "videos" | "exams";
   userName: string;
 }) {
   return (
@@ -43,9 +43,17 @@ export default function NavigationBar({
         <NavbarItem isActive={selected === "users"}>
           <Link
             color={selected === "users" ? "primary" : "foreground"}
-            href="/users"
+            href="/students"
           >
-            Jäsenet
+            Opiskelijat
+          </Link>
+        </NavbarItem>
+        <NavbarItem isActive={selected === "exams"}>
+          <Link
+            color={selected === "exams" ? "primary" : "foreground"}
+            href="/exams"
+          >
+            Tentit
           </Link>
         </NavbarItem>
       </NavbarContent>
@@ -64,11 +72,21 @@ export default function NavigationBar({
         <NavbarMenuItem isActive={selected === "users"} className="p-2">
           <Link
             color={selected === "users" ? "primary" : "foreground"}
-            href="/users"
+            href="/students"
             size="lg"
             className="w-full"
           >
-            Jäsenet
+            Opiskelijat
+          </Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem isActive={selected === "exams"} className="p-2">
+          <Link
+            color={selected === "exams" ? "primary" : "foreground"}
+            href="/exams"
+            size="lg"
+            className="w-full"
+          >
+            Tentit
           </Link>
         </NavbarMenuItem>
       </NavbarMenu>
