@@ -1,5 +1,5 @@
 import connectMongo from "@/connectMongo";
-import User, { StudentCourse, UserInterface } from "@/models/User";
+import User, { ApiUser, StudentCourse, UserInterface } from "@/models/User";
 import { FilterQuery } from "mongoose";
 
 const LIMIT = 10;
@@ -67,11 +67,12 @@ async function getVisibleStudents(
   };
 }
 
-async function getByEmail(email: string): Promise<UserInterface> {
+async function getByEmail(email: string): Promise<ApiUser | null> {
   await connectMongo();
 
   const user = await User.findOne({ email });
-  return user?.toJSON() ?? null;
+  const jsonUser = user?.toJSON();
+  return jsonUser ?? null;
 }
 
 async function changeVisibility(
@@ -81,6 +82,7 @@ async function changeVisibility(
   await connectMongo();
 
   const user = await User.findOne({ email });
+  if (!user) throw new Error("User not found");
   user.visible = visible;
   await user.save();
 

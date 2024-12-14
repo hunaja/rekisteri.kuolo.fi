@@ -58,10 +58,16 @@ export default function AdminEntry({ exam }: { exam: ApiExamPopulated }) {
           <p>
             lähetti tentin kurssille{" "}
             <strong className="font-bold">{exam.course.name}</strong>
-            {`, ${exam.course.year}`}
+            {` ${exam.course.year}`}
           </p>
         }
-        name="John Doe"
+        avatarProps={{
+          name: exam.submitter?.name
+            .split(" ")
+            .map((n) => n[0])
+            .join(""),
+        }}
+        name={exam.submitter?.name ?? "Tuntematon"}
       />
       <div className="flex flex-col sm:flex-row place-items-center mb-5 my-2">
         <ExamBox key={exam.id} exam={exam} />

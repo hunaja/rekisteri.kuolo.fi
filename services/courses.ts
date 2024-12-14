@@ -13,6 +13,7 @@ const getCoursesForYear = async (
   const courses = await Course.find({ year }).populate({
     path: "exams",
     match: { visible: true },
+    options: { sort: { year: -1 } },
   });
   const jsonCourses = courses.map((c) => {
     const jsonCourse = c.toJSON();

@@ -39,12 +39,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Inauthenticated" }, { status: 401 });
   if (session.type === "inauthorized")
     return NextResponse.json({ error: "Inauthorized" }, { status: 403 });
+  if (session.type === "advertiser")
+    return NextResponse.json({ error: "Advertiser" }, { status: 403 });
 
   try {
     const body = await req.json();
     const validatedForm = await examForm.validate(body);
 
-    const createdExam = await examsService.createExam(validatedForm);
+    const createdExam = await examsService.createExam({
+      submitter: session.id.toString(),
+      ...validatedForm,
+    });
     return NextResponse.json(createdExam);
   } catch (e) {
     if (e instanceof yup.ValidationError) {
@@ -57,7 +62,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
+    console.error(e);
     return NextResponse.json({ error: "Unknown error" }, { status: 500 });
   }
 }

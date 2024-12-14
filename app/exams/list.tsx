@@ -162,11 +162,20 @@ export function ExamsList({
                       : "1 tentti"
                   }`}
                 >
-                  {course.exams.map((exam) => (
-                    <div key={exam.id} className="mb-4">
-                      <ExamBox key={exam.id} exam={exam} />
-                    </div>
-                  ))}
+                  {course.exams
+                    .filter((e) => !e.year)
+                    .map((exam) => (
+                      <div key={exam.id} className="mb-4">
+                        <ExamBox key={exam.id} exam={exam} />
+                      </div>
+                    ))}
+                  {course.exams
+                    .filter((e) => e.year)
+                    .map((exam) => (
+                      <div key={exam.id} className="mb-4">
+                        <ExamBox key={exam.id} exam={exam} />
+                      </div>
+                    ))}
                 </AccordionItem>
               ))}
           </Accordion>

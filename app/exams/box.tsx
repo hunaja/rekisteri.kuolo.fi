@@ -4,9 +4,16 @@ import { Card, CardBody } from "@nextui-org/card";
 import { Chip, Link } from "@nextui-org/react";
 import { useState } from "react";
 
-export type ApiExamWithoutCourse = Omit<ApiExam, "course">;
+export type ApiExamWithoutCourseAndSubmitter = Omit<
+  ApiExam,
+  "course" | "submitter"
+>;
 
-export default function ExamBox({ exam }: { exam: ApiExamWithoutCourse }) {
+export default function ExamBox({
+  exam,
+}: {
+  exam: ApiExamWithoutCourseAndSubmitter;
+}) {
   const [downloading, setDownloading] = useState(false);
 
   const handleExamClick = async () => {

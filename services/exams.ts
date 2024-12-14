@@ -21,10 +21,25 @@ export type ExamForm = Omit<
 const getAllInvisible = async (): Promise<ApiExamPopulated[]> => {
   await connectMongo();
 
-  const exams = await Exam.find({ visible: false }).populate("course");
+  const exams = await Exam.find({ visible: false })
+    .populate("course")
+    .populate("submitter")
+    .sort({ createdAt: -1 });
 
   const jsonExams = exams.map((e) => {
     const jsonExam = e.toJSON();
+
+    if (jsonExam.submitter) {
+      // @ts-expect-error mongoose types are not perfect
+      console.log("Submitter: ", jsonExam.submitter);
+      jsonExam.submitter = {
+        id: jsonExam.submitter.id.toString(), // @ts-expect-error mongoose types are not perfect
+        name: jsonExam.submitter.name, // @ts-expect-error
+        email: jsonExam.submitter.email, // @ts-expect-error
+        phoneNumber: jsonExam.submitter.phoneNumber, // @ts-expect-error
+        visible: jsonExam.submitter.visible, // @ts-expect-error
+      };
+    }
 
     return {
       ...jsonExam,
@@ -89,6 +104,7 @@ const createExam = async (
     visible: false,
     fileMimeType,
     fileSize: examForm.file.size,
+    submitter: examForm.submitter,
   });
   const savedExam = await exam.save();
 

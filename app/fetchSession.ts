@@ -1,11 +1,12 @@
 import advertiserUsers, { AdvertiserUser } from "@/advertiserUsers";
-import { UserInterface } from "@/models/User";
+import { ApiUser } from "@/models/User";
 import usersService from "@/services/users";
 import { currentUser } from "@clerk/nextjs/server";
 
 export type UserSession = {
   type: "user";
-} & UserInterface;
+  id: string;
+} & ApiUser;
 
 export type AdvertiserSession = {
   type: "advertiser";
