@@ -31,8 +31,6 @@ import { courseYears } from "../constants";
 import CreateExamForm from "./createExamForm";
 import ExamBox from "./box";
 
-const queryClient = new QueryClient();
-
 type Tab = "createCourse" | "createExam";
 
 export function ExamsList({
@@ -109,7 +107,7 @@ export function ExamsList({
                   selectedKey={selectedTab} // @ts-expect-error to be fixed
                   onSelectionChange={setSelectedTab}
                   size="md"
-                  className="pt-5 px-10"
+                  className="pt-10 px-2 w-full"
                 >
                   <Tab key="createExam" title="Lähetä tenttimateriaalia">
                     {courses ? (
@@ -165,7 +163,9 @@ export function ExamsList({
                   }`}
                 >
                   {course.exams.map((exam) => (
-                    <ExamBox key={exam.id} exam={exam} />
+                    <div key={exam.id} className="mb-4">
+                      <ExamBox key={exam.id} exam={exam} />
+                    </div>
                   ))}
                 </AccordionItem>
               ))}
@@ -183,6 +183,8 @@ export default function ExamsListWrapper({
   initialCourseYear: CourseYear;
   initialCourses: ApiCoursePopulated[];
 }) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
     <QueryClientProvider client={queryClient}>
       <ExamsList

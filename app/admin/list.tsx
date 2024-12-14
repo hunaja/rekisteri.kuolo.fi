@@ -7,8 +7,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import AdminEntry from "./entry";
-
-const queryClient = new QueryClient();
+import { useState } from "react";
 
 export function ExamsList({
   initialExams,
@@ -23,11 +22,15 @@ export function ExamsList({
 
   return (
     <div className="p-4 sm:p-10">
-      <h1 className="text-3xl font-bold">Exams</h1>
+      <h1 className="text-3xl font-bold">Lähetetyt tentit</h1>
       <div className="mt-4">
         {exams?.map((exam) => (
           <AdminEntry key={exam.id} exam={exam} />
         ))}
+
+        {exams?.length === 0 && (
+          <div className="text-gray-500">Ei käsittelemättömiä tenttejä.</div>
+        )}
       </div>
     </div>
   );
@@ -38,6 +41,8 @@ export default function ExamsListWrapper({
 }: {
   initialExams: ApiExamPopulated[];
 }) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
     <QueryClientProvider client={queryClient}>
       <ExamsList initialExams={initialExams} />

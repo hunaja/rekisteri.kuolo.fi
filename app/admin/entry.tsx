@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, User } from "@nextui-org/react";
 import ExamBox from "../exams/box";
 import { CheckIcon, TrashIcon } from "@heroicons/react/16/solid";

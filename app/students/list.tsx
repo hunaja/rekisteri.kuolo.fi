@@ -38,8 +38,6 @@ const studentCourses: StudentCourse[] = [
   "LTn",
 ];
 
-const queryClient = new QueryClient();
-
 function UsersList({ initialData }: { initialData: ApiUsers }) {
   const [name, setName] = useState("");
   const [courses, setCourses] = useState<Selection>(new Set(studentCourses));
@@ -178,6 +176,8 @@ export default function UsersListWrapper({
 }: {
   initialData: ApiUsers;
 }) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
     <QueryClientProvider client={queryClient}>
       <UsersList initialData={initialData} />

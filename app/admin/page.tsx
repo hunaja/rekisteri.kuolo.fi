@@ -15,8 +15,6 @@ export default async function Page() {
   const initialExams = await examsService.getAllInvisible();
   if (!initialExams) return <div>Failed to fetch exams</div>;
 
-  console.log("All invisible", initialExams);
-
   return (
     <>
       <NavigationBar selected="admin" userName={session.name} />
